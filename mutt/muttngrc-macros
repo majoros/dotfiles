@@ -1,0 +1,19 @@
+#
+# $Id: .muttrc-macros,v 1.2 2004/07/29 20:38:15 lonstein Exp lonstein $
+#
+#   macro <mode> <keys> <commands or keys> [desc]
+#
+# mode is one of generic, pager, index, browser, attach, alias, query, editor, compose, pgp
+# keys: \e == escape, \C == ctrl, <f1> .. <f12>
+#
+
+macro index "\Cxz" "<tag-pattern>~A\n<tag-prefix><clear-flag>N<untag-pattern>~A\n" "Zap all new msg flags"
+macro index <f5> ":source ~/.muttrc\n" "Reload the muttrc"
+macro index "\Cxk" "<delete-pattern>~d ~r>24h\n" "Delete msgs >24hrs old"
+
+macro index \Cr \
+  "<tag-pattern>~N\n<tag-prefix><clear-flag>N" \
+  "Mark all new messages as read"
+
+macro index b ':toggle sidebar_visible<enter>'
+macro pager b ':toggle sidebar_visible<enter>'

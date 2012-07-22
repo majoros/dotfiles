@@ -1,0 +1,4 @@
+application/msword; catdoc %s; copiousoutput
+application/msexcel; xls2csv %s; copiousoutput
+application/vnd.ms-excel; xls2csv %s; copiousoutput
+application/octet-stream; less %s; copiousoutput

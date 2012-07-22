@@ -1,0 +1,5 @@
+text/html;                cathtml.sh %s; copiousoutput
+image/*;                  kview %s;
+application/msword;       catdoc %s; copiousoutput
+application/octet-stream; less %s
+application/pdf;          kpdf %s;

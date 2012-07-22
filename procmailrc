@@ -1,0 +1,557 @@
+#
+# $Id: .procmailrc,v 1.18 2011/01/12 17:59:15 lonstein Exp lonstein $
+#
+PATH=/bin:/usr/bin:/ms/dist/aurora/bin
+FORMAIL=/usr/bin/formail
+MAILDIR=$HOME/private/Maildir
+DEFAULT=$MAILDIR/
+LOGFILE=$MAILDIR/procmail-log
+LOCKFILE=$MAILDIR/.lockmail
+
+LOGABSTRACT="all"
+#VERBOSE="yes"
+
+# Handle duplicates
+# w produces (non-fatal) error msg
+:0 hWc: $MAILDIR/.mesgid.lock
+| $FORMAIL -D 16384 $MAILDIR/.mesgid.cache
+
+# To save the duplicate into this file.
+:0 a:
+$MAILDIR/.duplicate/
+
+# Collect some headers for later user
+:0
+* ^Subject:\/.*
+{
+  SUBJECT = $MATCH
+}
+
+:0
+* ^X-Orig-Subject:\/.*
+{
+  ORIGSUB = $MATCH
+}
+
+
+# ########################################
+#
+#   ALL THIS IS JUNK
+#
+#   Process first to get rid of it
+#
+
+#
+# swift
+#
+:0:
+* ^From:.*@.*.swift.com
+$MAILDIR/.junk/
+
+:0:
+* ^Subject:.*autoreply
+$MAILDIR/.junk/
+
+#
+# autoresponders of various kind
+#
+:0:
+* ^From:.*@(nomail|noreply|mailer-daemon)
+* ^Subject:.*(Autoresponder|quarantine|returned|bounce|Undeliver)
+$MAILDIR/.junk/
+
+#
+# various auto responses
+#
+:0:
+* ^Subject:.*(moderate|MSGroupMgr|moderation)
+$MAILDIR/.junk/
+
+#
+# and the folks who would like to unscramble eggs
+#
+:0:
+* ^Subject:.Recall:
+$MAILDIR/.junk/
+
+#
+# Delivery notifications, too
+#
+:0:
+* ^From:.*postmaster@exchange.ms.com
+* ^Subject:.Delivery.Status.Notification
+$MAILDIR/.junk/
+
+#
+# ########################################
+
+
+
+
+############################################################
+#
+# Fix 'From' header broken by Exchange 2003
+#
+:0 fhw
+| $HOME/bin/munge_from
+
+############################################################
+
+
+
+############################################################
+#
+#               MQ
+#
+
+#
+# carbon copy anything involving mcm's
+#
+:0
+* ^(To|Cc|Resent-To):.*mq-mcm
+{
+        :0 c
+        $MAILDIR/.mq-mcm/
+
+        :0
+        $MAILDIR/.mqjs/
+}
+
+# the wife
+:0:
+* ^From:.*(janice.majoros|janicespear)
+$MAILDIR/.janice.majoros/
+
+#starcraft
+:0:
+* ^To:.*starcraft
+$MAILDIR/.sc2/
+
+#L3/Engineering Escalation
+
+:0:
+* ^Subject:.*L3/Engineering Escalation
+$MAILDIR/.escilations/
+
+
+#git
+:0:
+* ^To:.*autosys-scm
+$MAILDIR/.git.posts/
+
+:0:
+* ^TO:.*vim-users
+$MAILDIR/.vim/
+
+
+:0:
+* ^Subject: [MQ ACTION REQUIRED] Unused
+$MAILDIR/.unused_spam/
+
+:0:
+* ^TO:.*androidusers
+$MAILDIR/.android/
+
+#
+# MQ Keane
+#
+:0:
+* ^Subject:.*keane.hands.on
+$MAILDIR/.mq-keane/
+
+#
+# Twiki updates
+#
+:0:
+* ^From:.*twiki-admin@morganstanley.com
+* Subject:.TWiki.MQEngineering
+$MAILDIR/.msjs/
+
+#
+# mq-monitor
+#
+:0 h
+* ^From:.*(mqm|AOMAIL|AUTOOPER)
+* ^TO_mq-monitor-alerts@(ms|msdw|morganstanley).com
+/dev/null
+
+#
+# Ops-onsite cleanup of solaris mqclient 5.2
+#
+:0:
+* ^(To|Cc|CC|Resent-To):.*mqclient-solaris-default@(ms|msdw|morganstanley).com
+$MAILDIR/.mqclient/
+
+#
+# catch the autooper alerts, too
+#
+:0:
+* ^From:.*(autooper|aomail|opsmvs)
+* ^(To|Cc|CC|Resent-To):.*mq-monitor-alerts@(ms|msdw|morganstanley).com
+$MAILDIR/.mq-monitor-alerts/
+
+# mqops
+:0:
+* ^Subject:.*(MQ-REQUEST|Please process/drain|MQCHECKOUT: Purged queues|[Pp]lease process or drain messages)
+$MAILDIR/.mqops/
+
+# mqdev
+:0:
+* ^(To|Cc|Resent-To):.*mqdev@(msdw|morganstanley).com
+$MAILDIR/.mqdev/
+
+# mq-audit
+:0
+* ^(To|Cc|CC):.*mqaudit@(ms|msdw|morganstanley).com
+* ^From:.*(mqm|root)
+{
+  :0 :
+  * ^Subject:.*MQ.Eclipse.*(Audit.Report|Access.denied)
+  $MAILDIR/.mqaudit-eclipse/
+
+  :0 :
+  * ^Subject:.*Long-running.transaction
+  $MAILDIR/.mqaudit/
+
+  :0 :
+  * ^Subject:.*Inconsistencies 
+  $MAILDIR/.mqaudit/
+
+  :0 h:
+  * ^Subject:.*Incorrect
+  /dev/null
+
+  :0 E:
+  $MAILDIR/.mqaudit/
+}
+
+
+
+########################################
+# Autosys
+########################################
+
+#####
+# These spammy things go first...
+#
+
+:0:
+* ^From:.*autosys
+* ^Subject:.*Autosys.(Digest|changes)
+$MAILDIR/.autosys-audit/
+
+:0:
+* ^TO_*autosys-audits
+* ^Subject:.*Stale.Job
+$MAILDIR/.autosys-stalejob-audit/
+
+:0:
+* ^TO_*autosys-audits
+* ^Subject:.*Persistent
+$MAILDIR/.autosys-jobfailure-audit/
+
+
+:0:
+* ^TO_*autosys-eng-reports
+$MAILDIR/.autosys-audit/
+
+# autosys db dumps are noisy...
+:0:
+* ^From:.*SYBASE
+* ^TO_autosys-eng
+* ^Subject:.*Turnover.*autosys-dbdump_4X
+$MAILDIR/.autosys-dbdump/
+
+#
+#####
+
+# twiki updates
+:0:
+* ^Subject:.*TWiki.AutoSysEng
+$MAILDIR/.mqjs/
+
+:0:
+* ^From:.*autosys-eng-reports
+$MAILDIR/.autosys-audit/
+
+:0:
+* ^From:.*audit
+* ^Subject:.*(autosys|jobs)
+$MAILDIR/.autosys-audit/
+
+:0:
+* ^Subject:.*grn:/ms/ei/entmgt/Autosys
+$MAILDIR/.mqjs/
+
+:0:
+* ^TO_autowebtool
+$MAILDIR/.mqjs/
+
+
+# autosys delays
+:0:
+* ^(To|Cc|Resent-To):.*autosys-delays
+$MAILDIR/.junk/
+
+# TCM's for eng teams
+:0:
+* ^From:.*tcm2prod
+$MAILDIR/.tcm2/
+
+
+# ########################################
+#
+#  Engineering teams consolidate into one
+#  and so does the email
+#
+#  Tack on the target group to the subject
+#
+
+:0
+* ^TO_\/(autosys|jobsched|mqjs|mq)
+ {
+     LISTNAME = "$MATCH"
+
+     GROUP=""
+     :0
+     * LISTNAME ?? autosys
+     { GROUP = "Autosys" }
+
+     :0E
+     * LISTNAME ?? jobsched
+     { GROUP = "Jobsched" }
+
+     :0E
+     * LISTNAME ?? mqjs
+     { GROUP = "MQJS" }
+
+     :0E
+     * LISTNAME ?? mq
+     { GROUP = "MQ" }
+
+     :0E
+     * LISTNAME ?? ca.com
+     { GROUP = "CA" }
+
+     :0 fwh
+     *$ ! ${GROUP+!}
+     *$ ${ORIGSUB+!}
+     *$ ! ORIGSUB ?? $GROUP
+     *$ ! SUBJECT ?? (autosys|jobsched|mqjs|mq)
+     | $FORMAIL -I "Subject: [$GROUP]$SUBJECT" -I "X-Orig-Subject: $SUBJECT"
+
+     :0
+     $MAILDIR/.mqjs/
+ }
+
+#
+# other mq stuff
+#
+
+:0:
+* ^From:.*@us.ibm.com
+$MAILDIR/.mqjs/
+
+:0:
+* ^From:.*@equilend.com
+$MAILDIR/.mqjs/
+
+:0:
+* ^From:.*@themunicenter.com
+$MAILDIR/.mqjs/
+
+
+#
+# Filter TCM announcements, MQ in one bucket, everything else in
+# another
+#
+:0:
+* ^From:.*tcm
+* ^Subject:.*MQ
+$MAILDIR/.mqjs/
+
+:0:
+* ^From:.*tcm
+* ^Subject:.*TCM
+$MAILDIR/.tcm/
+
+:0:
+* ^TO_(tcm|tcm2)(users|_users|dev|_approvers|_eng)
+$MAILDIR/.tcm/
+
+:0:
+* ^From:.*theice.com
+$MAILDIR/.mqjs/
+
+
+
+#################################################################
+#
+# ai, eai, mstk, msde, etc.
+#
+#################################################################
+:0:
+* ^TO_ivision
+$MAILDIR/.ivision/
+
+:0:
+* ^TO_openssh
+$MAILDIR/.openssh/
+
+
+:0:
+* ^From:.*EAI.Twiki.404
+* ^Subject:.*EAI.Twiki.404
+$MAILDIR/.ai/
+
+:0:
+* ^TO_ai(all|direct|ny|global|-1nyp)
+$MAILDIR/.ai/
+
+:0:
+* ^TO_hst(-all|-perf|pm|linux|infra)
+$MAILDIR/.ai/
+
+:0:
+* ^TO_(eiquasar|quasar)
+$MAILDIR/.quasar/
+
+:0:
+* ^TO_(mstk.*|msde.*|jira.*|eai.*)
+$MAILDIR/.ai/
+
+# galaxy
+:0:
+* ^TO_(galaxy)(core|help)
+$MAILDIR/.ai/
+
+
+#################################################################
+#
+# Misc
+#
+#################################################################
+
+#code reiviews 
+:0:
+* ^Subject:.*code.review
+$MAILDIR/.code_reviews/
+
+# lua
+:0:
+* ^TO_lua-users
+$MAILDIR/.lua/
+
+# lisp
+:0:
+* ^TO_lisp.*@
+$MAILDIR/.lisp/
+
+# linux
+:0:
+* ^TO_linux.*@
+$MAILDIR/.linux/
+
+# windist, nt, pc
+:0:
+* ^(To|Cc|Resent-To):.*(windist|ntops|pcso|afswin|patch-announce|pc-deployments).*@
+$MAILDIR/.nt/
+
+# hackers
+:0:
+* ^TO_hackers@(ms|msdw|morganstanley).com
+$MAILDIR/.hackers/
+
+# ssh groups
+:0:
+* ^(To|Cc|Resent-To):.*sshpilot.*@(ms|msdw|morganstanley).com
+$MAILDIR/.ssh/
+
+# xml
+:0:
+* ^(To|Cc|Resent-To):.*xml@(ms|msdw|morganstanley).com
+$MAILDIR/.xml/
+
+# unix
+:0:
+* ^(To|Cc|Resent-To):.*aurora
+$MAILDIR/.aurora/
+
+# emacsen
+:0:
+* ^(To|Cc|Resent-To):.*(emacs|emacshelp|emacs-users)@
+$MAILDIR/.emacs/
+
+# java
+:0:
+* ^TO_(javadev|javahelp|msjava|jxb)@(ms|msdw|morganstanley).com
+$MAILDIR/.java/
+
+
+#########################################
+#
+# Lump together all the dynamic languages
+# ex. perl, python and ruby
+#
+
+:0
+* ^TO_(perl|python|ruby)
+ {
+   GROUP=""
+
+   :0
+   * ^TO_msdluser
+   { GROUP = "msdl" }
+
+   :0E
+   * ^TO_(perl5|perlhelp|perlcore)@(ms|msdw|morganstanley).com
+   { GROUP = "perl" }
+
+   :0E
+   * ^TO_python
+   { GROUP = "python" }
+
+   :0E
+   * ^TO_ruby
+   { GROUP = "ruby" }
+
+   :0 fwh
+   *$ ! ${GROUP+!}
+   *$ ${ORIGSUB+!}
+   *$ ! ORIGSUB ?? $GROUP
+   | $FORMAIL -I "Subject: [$GROUP]$SUBJECT" -I "X-Orig-Subject: $SUBJECT"
+
+   :0
+   $MAILDIR/.msdl/
+ }
+
+#
+# Twiki
+#
+:0:
+* ^TO_twiki
+$MAILDIR/.twiki/
+
+#
+# Mozilla
+#
+:0:
+* ^TO_mozilla
+$MAILDIR/.mozilla/
+
+#
+# fsf
+#
+:0:
+* ^TO_fsf(core|-announce)
+$MAILDIR/.fsf/
+
+#
+#
+# dba stuff, must be last because they get cc-ed by so many
+#
+#
+:0:
+* ^(To|Cc|Resent-To):.*(dbau|lndbau|dsdb|nydbau_req|lndbacheck|asiadba)@
+$MAILDIR/.dbau/
+

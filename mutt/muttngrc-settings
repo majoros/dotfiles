@@ -1,0 +1,75 @@
+#set sendmail='/ms/dist/aurora/bin/sendmail -oem -oi'
+set sendmail='/usr/lib/sendmail -oem -oi'
+
+#
+# These are mbox, not Maildir. Uncomment to use old scheme
+#
+#set folder=/ms/user/m/majoros/private/Mail		# where i keep my mailboxes
+#set mbox=~/private/Mail/received	# where to store read messages
+set record=~/private/Maildir/.outbox_`date +%Y`	# default location to save outgoing mail
+#set spoolfile='~/private/Mail/INBOX'	# where my new mail is located
+
+set trash=".trash"
+set quit=ask-yes    # ask before quit/exit
+set abort_unmodified=yes	# automatically abort replies if I don't
+				# change the message
+set query_command = "/ms/user/m/majoros/sbin/mutt_ldap_query2.pl '%s'"
+##################set print_cmd="/ms/dist/fsf/PROJ/a2ps/4.13/bin/a2ps --medium=letter" 
+set allow_8bit			# never do Q-P encoding on legal 8-bit chars
+set attribution="On %d, %n wrote:"	# how to attribute replies
+set autoedit			# go to the editor right away when composing
+set noconfirmappend		# don't ask me if i want to append to mailboxes
+set copy=yes			# always save a copy of outgoing messages
+set delete=yes			# purge deleted messages without asking
+set edit_headers		# let me edit the message header when composing
+#set editor = "gnuclient -nw -l ~lonstein/.custom/elisp/misc/post -l ~lonstein/.custom/elisp/emacs-email.el"
+#set editor="gnuclient -nw"
+set editor="/ms/dist/fsf/PROJ/vim/7.3/bin/vim -X -S ~/.vimrc_muttng"
+#set pager="gnuclient -nw"
+#set editor = "jove"
+set forward_decode		# weed and MIME decode forwaded messages
+set forward_quote		# quote the header and body of forward msgs
+##############set hdr_format="%4C %Z %{%m/%d} %-15.15F (%4c) %s" # format of the index
+set index_format="%4C %Z %[%y/%m/%d %H:%M%p] %-22.20F %M %s" # format of the index
+set help			# show the help lines
+set include			# always include messages when replying
+set mailcap_path="~/.mutt/.mutt-mailcap:~/.mailcap:/etc/mailcap"
+set nomark_old
+set move=no  # shut up already
+set mail_check=10		# how often to poll for new mail
+#set metoo			# remove my address when replying
+unset reply_self
+set mime_forward		# use message/rfc822 type to forward messages
+set pager_index_lines=8		# how many index lines to show in the pager
+#set postponed=+postponed	# mailbox to store postponed messages in
+set print_command=/bin/false	# how to print things (I like to save trees)
+set noprompt_after	# ask me for a command after the external pager exits
+set read_inc=100		# show progress when reading a mailbox
+set reply_to			# always use reply-to if present
+set reverse_name		# use my address as it appears in the message
+set beep=no             # stupid beep
+				# i am replying to
+set nosave_empty		# remove files when no messages are left
+set sort=threads		# primary sorting method
+##set sort=reverse-date-sent
+
+set tilde			# virtual lines to pad blank lines in the pager
+set nouse_domain		# don't qualify local addresses with $domain
+set use_from			# always generate the `From:' header field
+#set visual="/ms/dist/fsf/PROJ/xemacs/21.4.4/bin/xemacs -nw -vanilla"        # editor invoked by ~v in the builtin editor
+#set visual="/ms/dist/fsf/PROJ/vim/7.0/bin/vim -R"  
+############################set write_inc=25		# show progress while writing mailboxes
+
+#
+# cleanup badly formatted lines
+#
+set smart_wrap
+set wrapmargin=10
+unset markers
+
+set signature=~/private/.sigmutt
+
+#
+# Damn you and your multipart/alternative
+#
+alternative_order text/plain text/enriched text

@@ -1,0 +1,73 @@
+#
+# Maildir stuff
+#
+set mbox_type=Maildir
+set folder=~/private/Maildir/           # where i keep my mailboxes
+set spoolfile=~/private/Maildir/.inbox
+#set mbox=~/private/Maildir/.received    # store read messages
+set record=~/private/Maildir/.outbox    # save outgoing mail
+set postponed=~/private/Maildir/.postponed
+
+set mask="!^\\.[^.]"            # hide the dot preceding maildir
+
+#mailboxes `\
+#echo -n "+ "; \
+#for file in ~/private/Maildir/.*; do \
+#  box=$(basename $file); \
+#  if [ ! $box = '.' -a ! $box = '..' -a ! $box = '.customflags' \
+#      -a ! $box = '.subscriptions' -a ! $box = '.msgid.cache' ]; then \
+#    echo -n "+$box "; \
+#  fi; \
+#done`
+
+mailboxes `cd ~/private/Maildir && \
+ find . -maxdepth 2 -regex '^\.\/\.[a-z].*' -print | \
+ egrep -v -e 'new|cur|tmp' | \
+ sed -e 's/^\.\//+/' | sort | paste -s - \
+ echo "+./"`
+
+#
+# muttng specific
+#
+ifdef header_cache 'set header_cache=~/private/Mail/header_cache'
+ifdef header_cache_compress 'set header_cache_compress=yes'
+
+set sidebar_visible
+set sidebar_width=40
+set sidebar_shorten_hierarchy
+set sidebar_delim=" | "
+color sidebar_new     brightcyan black     # for boxes with new mail
+set index_format="%4C %Z %{%m/%d %h:%M} %-15.15F (%4c) %s" # format of the index
+
+macro index b ':toggle sidebar_visible<enter>'
+macro pager b ':toggle sidebar_visible<enter>'
+
+
+# Just to keep things neat.
+source ~/.mutt/muttngrc-settings
+source ~/.mutt/muttngrc-colors
+source ~/.mutt/muttngrc-bindings
+source ~/.mutt/muttngrc-aliases
+source ~/.mutt/muttngrc-hooks    # use our own w/maildir
+source ~/.mutt/muttngrc-macros
+source ~/.mutt/muttngrc-scoring
+
+my_hdr From: Chris Majoros <christopher.majoros@morganstanley.com>
+my_hdr Organization: Morgan Stanley Enterprise Computing
+
+
+
+unhdr_order *				# forget the previous settings
+hdr_order date from subject to cc
+
+auto_view application/x-gunzip
+auto_view application/x-gzip
+auto_view text/html
+
+#
+# strip useless headers
+#
+ignore *
+unignore from date subject to cc
+unignore organization organisation x-mailer x-newsreader
+unignore Resent-Date Message-ID Return-Path

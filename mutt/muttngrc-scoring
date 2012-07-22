@@ -1,0 +1,27 @@
+unscore *
+score ~A           +1                        # start value
+score ~p           +100                      # addressed to me, must be important :)
+score ~P           +10                       # from me
+score '~C mqeng'   +100
+score '~C mqcore'  +100
+
+score "~C 'mqaudit' ~s 'critical'" +100
+score "~C 'mqaudit' ~s 'warning'"  +50
+
+score "~C 'autosys-eng'" +100
+score "~C 'jobsched-dev-weekly'" +100
+
+
+#
+# fiddle some color for score
+#
+
+# ok, technically a folder hook...
+folder-hook 'mqaudit' 'color index black red "~C mqaudit ~n 100-"'
+folder-hook 'mqaudit' 'color index black yellow "~C mqaudit ~n 50-99"'
+
+color index black blue '~N ~n 10-999'  # new and scored up
+
+
+color index cyan black '~n 10-199'     # normal
+color index brightyellow black '~n 200-999'  # very important?

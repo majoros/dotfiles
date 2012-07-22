@@ -1,0 +1,7 @@
+
+[user]
+	name = Chris Majoros
+	email = chris@majoros.us
+
+[core]
+	editor = vim -S ~/.vimrc_git
