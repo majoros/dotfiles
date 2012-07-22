@@ -1,9 +1,8 @@
 
-# The ksh envfile is not run when started from cygwin.
-# so it $MYSHELL is not set we need to set it.
-if [ ! -n "$MYSHELL" ]; then
-        export MYSHELL='zsh'
-fi
+# Important variable setting --------------------------------------------------
+export ENV_ROOT="~/git"
+export DOTFILES_ROOT="${ENV_ROOT}/dotfiles"
+export BUNDLE_ROOT="${ENV_ROOT}/bundles"
 
 
 # Colors ----------------------------------------------------------
