@@ -1,8 +1,9 @@
 
 # Important variable setting --------------------------------------------------
-export ENV_ROOT="~/git"
-export DOTFILES_ROOT="${ENV_ROOT}/dotfiles"
+export ENV_ROOT="/home/majoros/git/myenv"
+export DOTFILES_ROOT="${ENV_ROOT}/.dotfiles"
 export BUNDLE_ROOT="${ENV_ROOT}/bundles"
+export BUNDLE_ROOT_STR="${BUNDLE_ROOT}/{}"
 
 
 # Colors ----------------------------------------------------------
