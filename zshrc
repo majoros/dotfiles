@@ -51,9 +51,9 @@ alias -g avg=" | awk '{ttl+=\$1; count++} END{print ttl/count}'"
 
 if [ -n "$TMUX" ]; then
         export TMUX_SESSION_ID=$(tmux list-windows |grep active |awk '{print $1}' |sed 's/://')
-        export HISTFILE=~/tmp/.zsh/history/tmux_history.$TMUX_SESSION_ID
+        export HISTFILE=~/.env/zsh/history/tmux_history.$TMUX_SESSION_ID
 else
-        export HISTFILE=~/tmp/.zsh/history/default
+        export HISTFILE=~/.evn/zsh/history/default
 fi
 
 export HISTIGNORE="&:ls:[bf]g:exit:reset:clear:cd:cd ..:cd.."
