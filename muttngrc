@@ -52,8 +52,8 @@ source ~/.mutt/muttngrc-hooks    # use our own w/maildir
 source ~/.mutt/muttngrc-macros
 source ~/.mutt/muttngrc-scoring
 
-my_hdr From: Chris Majoros <christopher.majoros@morganstanley.com>
-my_hdr Organization: Morgan Stanley Enterprise Computing
+my_hdr From: Chris Majoros <>
+my_hdr Organization:
 
 
 
